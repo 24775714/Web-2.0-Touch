@@ -12,7 +12,7 @@ div.jsTouch {
 div.jsTouchPanel {
 	border-left: 2px solid #999999; 
 	overflow: hidden; 
-	background-color: blacl;
+	background-color: black;
 }
 
 div.jsTouch a { 
@@ -112,18 +112,22 @@ div.jsTouch div.toolbar h1{
 }
 
 .back > span {
-	left: -7px;
-	background: -webkit-gradient(linear, left top, right bottom, color-stop(0,#496387), color-stop(.03,#9CB0CF), color-stop(.6,#455E80), color-stop(1,#5D7EAB));
-	border-left: 1px solid #5b6572;
-	border-bottom: 1px solid #5b6572;
-	-webkit-border-top-left-radius: 6px;
-	-webkit-border-bottom-right-radius: 6px;
-	-webkit-transform: rotate(45deg);
-	-webkit-mask-image: -webkit-gradient(linear, left bottom, right top, from(#000000), color-stop(0.37,#000000), color-stop(0.37, transparent), to(transparent));
+	top: 0px;
+	left: -11px;
+	height: 25px;
+	background: -webkit-gradient(linear, 0 0, 0 100%, color-stop(0,#496387), color-stop(.03,#9CB0CF), color-stop(.6,#455E80), color-stop(1,#5D7EAB));
+	border: 0px;
+	-webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABGCAYAAADb7SQ4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAiNJREFUeNrEWb9LQlEUvj5BcHoQvMnVKXD1D3CLwqBJbHJsazQaWoSCxgbHJiMIAiNok6AhCDdXVycnJ8EQOgeOYaG+d39998KH+HyP753zzjnfd325xfdSgVeV8B6BScuEV0IRSbxHeCMk/AVFXCA8ScQKSXxPqK0fQBBfE5r/D+Y8VzUT9jb94DPimqRYIYkrhGcpKhhxIqTxrpNcExdlQJTTTnRJnCc8ykhUSOIOoZ71ZFfEZ4S2zgUu+rguxZRHEnPbfKRVsOtUl0RtYpOLTYljIS2Z3nVk2DY9SbNCEt8RDm0rUpe4La1jvXSqmtum72raZI24KuNQIYl/nSGSOJb0Jq61M0pxhjwK9304hUjHGSKILzc5Q5drUzttdYY+I97pDH1FzG0zNFUb04gTG4kzJS5kdYauiZtZnaFr4ooKsCIVaDHxKAQxt1NBnGIVHfGCcEQYh3jGU8KBfMKLiyM+lgzAq/qT0ArVTg+Ei1B9fEPoovV4fcfQd2HedScX39GprwGTNjJn0maTELN6IuSzECLB6T5x2eM66jQgnIeSxa60GnS3uL56tr7b1Ai0JPVwYi6yho2U2lgfKym19VxjMRHzEGbvS9K+RBPzetGVUpf29lZHSl2/DMnLvwh1ZMQrKW3Ic4fvJOZS6ZMQW5hpmpT63DvtlFLfm7bBNruM2C2yXb7y3U6ZpRS5P/4jpUjihRTbCJ3q1eL3GMMfAQYAJmB6SBO619IAAAAASUVORK5CYII=);
+	-webkit-mask-size: 13px 27px;
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position-x: 0px;
+	-webkit-mask-position-y: 0px;
+	-webkit-mask-clip: border;
+	-webkit-box-sizing: border-box;	
 }	
 
 .back.clicked > span {
-	background-image: -webkit-gradient(linear, left top, right bottom, from(#7AD62B),  to(#56961E));
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#7AD62B),  to(#56961E));
 }
 
 .button.next {

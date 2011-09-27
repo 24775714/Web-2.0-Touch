@@ -26,12 +26,16 @@ var jsTouch = {
 	
 	overlayHTML: function(HTML, params, callBack) {
 		// parse parameters
+		var top 		= 52;
+		var left 		= 10;
 		var width  		= 300;
 		var height 		= 300;
 		var modal 		= false;
 		var opacity 	= 0.3;		
 		var bgcolor		= 'black';
 		if (typeof(params) == 'object') {
+			if (String(params['top']) 		!= 'undefined') width		= parseInt(params['top']);
+			if (String(params['left']) 		!= 'undefined') width		= parseInt(params['left']);
 			if (String(params['width']) 	!= 'undefined') width		= parseInt(params['width']);
 			if (String(params['height']) 	!= 'undefined') height		= parseInt(params['height']);
 			if (String(params['modal']) 	!= 'undefined') modal 		= params['modal'];
@@ -58,7 +62,7 @@ var jsTouch = {
 		var div = document.createElement('div');
 		div.id = 'overlay_box';
 		div.className = 'overlay';
-		div.style.cssText += 'left: 10px; top: 52px; width: '+ width +'px; height: '+ height +'px; -webkit-border-radius: 5px; '+
+		div.style.cssText += 'left: '+ left +'px; top: '+ top +'px; width: '+ width +'px; height: '+ height +'px; -webkit-border-radius: 5px; '+
 			'-webkit-transition: all .4s ease-in-out; opacity: 0;';
 		div.innerHTML = HTML;
 		$(document.body).append(div);			
@@ -304,6 +308,16 @@ function jsTouchBox(name, params) {
 				div_new.innerHTML = HTML;
 				break;
 		}
+		// execute scripts
+		var d =	div_new.getElementsByTagName("script");
+		var t = d.length;
+		for (var x = 0; x < t; x++) {
+			var ns = document.createElement('script');
+			ns.type = "text/javascript";
+			ns.text = d[x].text;
+			div_new.appendChild(ns);
+		}				
+		// -------
 		this.resize();
 		this.initScroll();
 	}
@@ -413,7 +427,10 @@ function jsTouchBox(name, params) {
 	div2.className = 'jsTouch div2';
 	$('#'+this.name).append(div1);
 	$('#'+this.name).append(div2);
-	
-	// -- resize events
-	window.addEventListener('resize', new Function("setTimeout(\"window.elements['"+ this.name +"'].resize()\", 1)"));
+	// -- resize event
+	// window.addEventListener('resize', new Function("setTimeout(\"window.elements['"+ this.name +"'].resize()\", 1)"));
 }
+
+// -- few events
+window.addEventListener('resize', new Function("setTimeout(\"jsTouch.resize()\", 1)"));
+window.applicationCache.addEventListener('updateready', function(){ window.applicationCache.swapCache(); }, false);

@@ -1,1 +1,0 @@
-<iframe src="http://google.com/maps" style="width: 100%; height: 100%;"></iframe>
