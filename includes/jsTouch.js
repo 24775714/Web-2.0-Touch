@@ -179,9 +179,9 @@ function jsTouchBox(name, params) {
 		}
 		$('#'+this.name)[0].style.cssText += '-webkit-perspective: 700px; overflow: hidden;';
 		
-		var comcss = 'position: absolute; width: '+ width +'px; height: '+ height +'px; overflow: hidden;';
-		div_old.style.cssText = 'z-index: 0; -webkit-backface-visibility: hidden;';
-		div_new.style.cssText = 'z-index: 1; -webkit-backface-visibility: hidden;';
+		var comcss = ' width: '+ width +'px; height: '+ height +'px; overflow: hidden;';
+		div_old.style.cssText = 'position: absolute; z-index: 0; -webkit-backface-visibility: hidden;';
+		div_new.style.cssText = 'position: absolute; z-index: 1; -webkit-backface-visibility: hidden;';
 		
 		switch (transition) {
 			case 'slide-left':
@@ -191,8 +191,8 @@ function jsTouchBox(name, params) {
 				div_new.innerHTML = HTML;
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
-					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(-'+ width +'px, 0, 0);';
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0px, 0, 0);';
+					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(-'+ width +'px, 0, 0);';
 				}, 1);
 				break;
 				
@@ -203,8 +203,8 @@ function jsTouchBox(name, params) {
 				div_new.innerHTML = HTML;
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
-					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d('+ width +'px, 0, 0);';
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0px, 0, 0);';
+					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d('+ width +'px, 0, 0);';
 				}, 1);
 				break;
 							
@@ -215,8 +215,8 @@ function jsTouchBox(name, params) {
 				div_new.innerHTML = HTML;
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
-					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0, '+ height +'px, 0);';
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0, 0, 0);';
+					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0, '+ height +'px, 0);';
 				}, 1);
 				break;
 			
@@ -227,8 +227,8 @@ function jsTouchBox(name, params) {
 				div_new.innerHTML = HTML;
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
-					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0, 0, 0);';
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0, 0, 0);';
+					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0, 0, 0);';
 				}, 1);
 				break;
 				
@@ -239,8 +239,8 @@ function jsTouchBox(name, params) {
 				div_new.innerHTML = HTML;
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
-					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateY(180deg);';
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateY(0deg);';
+					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateY(180deg);';
 				}, 1);
 				break;
 				
@@ -251,8 +251,8 @@ function jsTouchBox(name, params) {
 				div_new.innerHTML = HTML;
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
-					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateY(-180deg);';
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateY(0deg);';
+					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateY(-180deg);';
 				}, 1);
 				break;
 				
@@ -263,8 +263,8 @@ function jsTouchBox(name, params) {
 				div_new.innerHTML = HTML;
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
-					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateX(-180deg);';
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateX(0deg);';
+					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateX(-180deg);';
 				}, 1);
 				break;
 				
@@ -275,8 +275,8 @@ function jsTouchBox(name, params) {
 				div_new.innerHTML = HTML;
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
-					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateX(180deg);';
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateX(0deg);';
+					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateX(180deg);';
 				}, 1);
 				break;
 				
@@ -287,8 +287,8 @@ function jsTouchBox(name, params) {
 				div_new.innerHTML = HTML;
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
-					div_old.style.cssText += '-webkit-transition: .5s;';
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: scale(1); opacity: 1;';
+					div_old.style.cssText += '-webkit-transition: .5s;';
 				}, 1);
 				break;
 				
@@ -299,13 +299,21 @@ function jsTouchBox(name, params) {
 				div_new.innerHTML = HTML;
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
-					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: scale(1.7); opacity: 0;';
 					div_new.style.cssText += '-webkit-transition: .5s; opacity: 1;';
+					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: scale(1.7); opacity: 0;';
 				}, 1);
 				break;
 				
 			default:
+				// init divs
+				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0); opacity: 1;';
+				div_new.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0); opacity: 0;';
 				div_new.innerHTML = HTML;
+				// -- need a timing function because otherwise not working
+				window.setTimeout(function() {
+					div_new.style.cssText += '-webkit-transition: .5s; opacity: 1;';
+					div_old.style.cssText += '-webkit-transition: .5s; opacity: 1;';
+				}, 1);
 				break;
 		}
 		// execute scripts
@@ -314,7 +322,8 @@ function jsTouchBox(name, params) {
 		for (var x = 0; x < t; x++) {
 			var ns = document.createElement('script');
 			ns.type = "text/javascript";
-			ns.text = d[x].text;
+			if (d[x].text != '') ns.text = d[x].text;
+			if (d[x].src  != '') ns.src  = d[x].src;
 			div_new.appendChild(ns);
 		}				
 		// -------
