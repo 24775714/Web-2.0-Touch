@@ -271,6 +271,7 @@ div.overlay div.content div.simple-title {
 	border: solid 3px rgb(90,90,90);
 	background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(104,104,104,1)), color-stop(0.5, rgba(40,40,40,1)), color-stop(0.5, rgba(20,20,20,1)), to(rgba(40,40,40,1))); 
 	color: #fff;
+	text-shadow: #000000 1px 1px 1px;
 	font: bold 16px Helvetica, Sans-serif;
 	margin: 4px;
 	padding: 8px;

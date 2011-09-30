@@ -151,6 +151,73 @@ div.jsTouch div.toolbar h1{
 	background-image: -webkit-gradient(linear, left top, right bottom, from(#7AD62B), to(#56961E));
 }
 
+/* Sergemted Button */
+
+ul.seg-button { 
+	display: table-row;
+    font: bold 13px Helvetica, Arial, sans-serif;
+    padding: 0px;
+    margin: 0px;
+	-webkit-border-radius: 5px; 
+}
+
+ul.seg-button li {
+	display: inline-block;
+	border-left: 1px solid #222222;
+    border-top: 1px solid #222222;
+    border-bottom: 1px solid #222222;
+    list-style-type: none;
+    padding: 4px;
+	margin: 0px auto;
+	background-color: #fff;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#A6A6A6), to(#B5B5B5), color-stop(.5,#7A7A7A),color-stop(.5,#5C5C5C));
+	-webkit-box-shadow: 0px 1px 0px #666666;
+	height: 17px;
+	text-shadow: #666666 1px 1px 1px;
+	overflow: hidden;
+}
+
+ul.seg-button li:first-child {
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+}
+
+ul.seg-button li:first-child a.clicked {
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+}
+
+ul.seg-button li:last-child {
+	-webkit-border-top-right-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	border-right: 1px solid #222222 !important;
+}
+
+ul.seg-button li:last-child a.clicked {
+	-webkit-border-top-right-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+}
+
+ul.seg-button li a {
+    color: white !important;
+    text-decoration: none;
+    text-overflow: ellipsis;
+	text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
+	margin: -4px !important;
+    padding: 5px !important;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+	text-shadow: #fffff 1px 1px 1px !important;
+}
+
+ul.seg-button li a.clicked {
+	color: white;
+	text-shadow: #555555 1px 1px 1px;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#7AD62B), to(#56961E));
+}
+
 /* CONTENT ITEMS */
 	
 div.jsTouch div.content {

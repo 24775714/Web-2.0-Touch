@@ -154,6 +154,74 @@ div.jsTouch div.toolbar h1{
 	background-image: -webkit-gradient(linear, left top, right bottom, from(#24CCFF), to(#1A83D4), color-stop(.5,#1A88DB),color-stop(.5,#187BC7));
 }
 
+/* Sergemted Button */
+
+ul.seg-button { 
+	display: table-row;
+    font: bold 13px Helvetica, Arial, sans-serif;
+    padding: 0px;
+    margin: 0px;
+	margin-top: -2px; 
+	-webkit-border-radius: 5px; 
+}
+
+ul.seg-button li {
+	display: inline-block;
+	border-left: 1px solid #555555;
+    border-top: 1px solid #555555;
+    border-bottom: 1px solid #555555;
+    list-style-type: none;
+    padding: 4px;
+	margin: 0px auto;
+	background-color: #fff;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#9e9e9e), to(#717882), color-stop(.04,#BCBDBF));
+	-webkit-box-shadow: 0px 1px 0px #cccccc;
+	height: 17px;
+	text-shadow: #666666 1px 1px 1px;
+	overflow: hidden;
+}
+
+ul.seg-button li:first-child {
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+}
+
+ul.seg-button li:first-child a.clicked {
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+}
+
+ul.seg-button li:last-child {
+	-webkit-border-top-right-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	border-right: 1px solid #555555 !important;
+}
+
+ul.seg-button li:last-child a.clicked {
+	-webkit-border-top-right-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+}
+
+ul.seg-button li a {
+    color: white !important;
+    text-decoration: none;
+    text-overflow: ellipsis;
+	text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
+	margin: -4px !important;
+    padding: 5px !important;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+	text-shadow: #fffff 1px 1px 1px !important;
+}
+
+ul.seg-button li a.clicked {
+	color: white;
+	text-shadow: #555555 1px 1px 1px;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#24CCFF), to(#1A83D4), color-stop(.5,#1A88DB),color-stop(.5,#187BC7));
+}
+
 /* CONTENT ITEMS */
 	
 div.jsTouch div.content {
