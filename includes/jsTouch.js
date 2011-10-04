@@ -24,6 +24,21 @@ var jsTouch = {
 		}
 	},
 	
+	loadContent: function(url, params, callBack) {
+		if (window.event) { var currObj = this.getCurrentBox(window.event.target); }
+		// if target is defined - open there
+		if (params && typeof(params) == 'object' && params['target']) {
+			window.elements[params['target']].loadContent(url, params, callBack);
+		} else {
+			if (currObj) {
+				currObj.loadContent(url, params, callBack); 
+			} else {
+				// no current object -> loading into last current
+				this.lastCurrObj.loadContent(url, params, callBack); 
+			}
+		}
+	},
+	
 	overlayHTML: function(HTML, params, callBack) {
 		// parse parameters
 		var top 		= 52;
@@ -65,6 +80,10 @@ var jsTouch = {
 		div.style.cssText += 'left: '+ left +'px; top: '+ top +'px; width: '+ width +'px; height: '+ height +'px; -webkit-border-radius: 5px; '+
 			'-webkit-transition: all .4s ease-in-out; opacity: 0;';
 		div.innerHTML = HTML;
+		// isert another DIV (needed for iScroll)
+		var tmp = $('.content', div)[0];
+		if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
+		
 		$(document.body).append(div);			
 		setTimeout("$('#overlay_box').css('opacity', '1');", 1); // otherwise transition is not working
 		// add clicked class when clicked on the link
@@ -79,6 +98,10 @@ var jsTouch = {
 		// load overlay content
 		$.get(url, {}, function (data) {
 			$('#overlay_box').html(data);
+			// isert another DIV (needed for iScroll)
+			var tmp = $('.content', $('#overlay_box'))[0];
+			if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
+			
 			// check presens of footer and toolbar
 			var isToolbar = ($('div.overlay div.toolbar').length > 0 ? true : false);
 			var isFooter  = ($('div.overlay div.footer').length > 0 ? true : false);		
@@ -113,29 +136,31 @@ var jsTouch = {
 	getCurrentBox: function(el) {
 		var currObj = null;
 		var tmp 	= el;
-		while (tmp.tagName != 'BODY') {
+		while (tmp && tmp.tagName != 'BODY') {
 			if (tmp.tagName == 'DIV' && window.elements[tmp.id]) {
 				currObj = window.elements[tmp.id];
 				break;
 			}
 			tmp = tmp.parentNode;
 		}
+		if (currObj != null) this.lastCurrObj = currObj; // remember last real current
 		return currObj;
 	}
 }
 
 function jsTouchBox(name, params) {
 	// -- variables
-	this.name		= name;		// - unique name for the element
-	this.width		= ''; 	    // - if empty - then full screen
-	this.height		= ''; 	    // - if empty - then full screen	
+	this.name		 = name;		// - unique name for the element
+	this.width		 = ''; 	    // - if empty - then full screen
+	this.height		 = ''; 	    // - if empty - then full screen	
 	// -- init function
-	this.loadPage	= jsTouch_loadPage;
-	this.animate	= jsTouch_animate;
-	this.initScroll	= jsTouch_initScroll;
-	this.initTabs	= jsTouch_initTabs;
-	this.initLinks	= jsTouch_initLinks;
-	this.resize		= jsTouch_resize;	
+	this.loadPage	 = jsTouch_loadPage;
+	this.loadContent = jsTouch_loadContent;
+	this.animate	 = jsTouch_animate;
+	this.initScroll	 = jsTouch_initScroll;
+	this.initTabs	 = jsTouch_initTabs;
+	this.initLinks	 = jsTouch_initLinks;
+	this.resize		 = jsTouch_resize;	
 	// -- internal variables
 	this._tmpCallBack;
 	this._tmpTimer;
@@ -154,6 +179,28 @@ function jsTouchBox(name, params) {
 			"	obj.animate(data, '"+ ((typeof(params) == 'object' && params['transition']) ? params['transition'] : "") +"'); "+
 			"	obj.initTabs();"+
 			"	obj.initLinks();"+
+			"	if (obj._tmpCallBack && obj._tmpCallBack == 'function') { obj._tmpCallBack(); } "+
+			"}")
+		);
+	}
+	
+	function jsTouch_loadContent(url, params, callBack) {
+		// -- save some temp variables		
+		this._tmpCallBack	= callBack;
+		// -- get the page
+		this._tmpTimer = window.setTimeout(new Function("$('#"+ this.name +"').append('<div class=\"progress\">Loading...</div>')"), 200);		
+		$.get(url, {}, new Function("data", 
+			"$('#"+ this.name +" > .progress').remove();"+
+			"var obj = window.elements['"+ ((typeof(params) == 'object' && params['target']) ? params['target'] : this.name) +"']; "+ 
+			"if (obj && typeof(obj) == 'object') { "+
+			"	clearTimeout(obj._tmpTimer); "+
+			"	if (obj._lastDiv) {"+
+			"		$('#"+ this.name +" > .jsTouch.div1 > div.content').html('<div>'+ data +'</div>');"+
+			"	} else { "+
+			"		$('#"+ this.name +" > .jsTouch.div2 > div.content').html('<div>'+ data +'</div>');"+
+			"	}"+
+			"	obj.initLinks();"+
+			"	obj.initScroll();"+
 			"	if (obj._tmpCallBack && obj._tmpCallBack == 'function') { obj._tmpCallBack(); } "+
 			"}")
 		);
@@ -189,6 +236,9 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0);';
 				div_new.style.cssText += comcss +'-webkit-transform: translate3d('+ width +'px, 0, 0);';
 				div_new.innerHTML = HTML;
+				// isert another DIV (needed for iScroll)
+				var tmp = $('.content', div_new)[0];
+				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0px, 0, 0);';
@@ -201,6 +251,9 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0);';
 				div_new.style.cssText += comcss +'-webkit-transform: translate3d(-'+ width +'px, 0, 0);';
 				div_new.innerHTML = HTML;
+				// isert another DIV (needed for iScroll)
+				var tmp = $('.content', div_new)[0];
+				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0px, 0, 0);';
@@ -213,6 +266,9 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'z-index: 1; -webkit-transform: translate3d(0, 0, 0);';
 				div_new.style.cssText += comcss +'z-index: 0; -webkit-transform: translate3d(0, 0, 0);';
 				div_new.innerHTML = HTML;
+				// isert another DIV (needed for iScroll)
+				var tmp = $('.content', div_new)[0];
+				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0, 0, 0);';
@@ -225,6 +281,9 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0);';
 				div_new.style.cssText += comcss +'-webkit-transform: translate3d(0, '+ height +'px, 0);';
 				div_new.innerHTML = HTML;
+				// isert another DIV (needed for iScroll)
+				var tmp = $('.content', div_new)[0];
+				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0, 0, 0);';
@@ -237,6 +296,9 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: rotateY(0deg);';
 				div_new.style.cssText += comcss +'-webkit-transform: rotateY(-180deg);';
 				div_new.innerHTML = HTML;
+				// isert another DIV (needed for iScroll)
+				var tmp = $('.content', div_new)[0];
+				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateY(0deg);';
@@ -249,6 +311,9 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: rotateY(0deg);';
 				div_new.style.cssText += comcss +'-webkit-transform: rotateY(180deg);';
 				div_new.innerHTML = HTML;
+				// isert another DIV (needed for iScroll)
+				var tmp = $('.content', div_new)[0];
+				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateY(0deg);';
@@ -261,6 +326,9 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: rotateX(0deg);';
 				div_new.style.cssText += comcss +'-webkit-transform: rotateX(180deg);';
 				div_new.innerHTML = HTML;
+				// isert another DIV (needed for iScroll)
+				var tmp = $('.content', div_new)[0];
+				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateX(0deg);';
@@ -273,6 +341,9 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: rotateX(0deg);';
 				div_new.style.cssText += comcss +'-webkit-transform: rotateX(-180deg);';
 				div_new.innerHTML = HTML;
+				// isert another DIV (needed for iScroll)
+				var tmp = $('.content', div_new)[0];
+				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateX(0deg);';
@@ -285,6 +356,9 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0);';
 				div_new.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0); -webkit-transform: scale(.8); opacity: 0;';
 				div_new.innerHTML = HTML;
+				// isert another DIV (needed for iScroll)
+				var tmp = $('.content', div_new)[0];
+				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: scale(1); opacity: 1;';
@@ -297,6 +371,9 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0); -webkit-transform: scale(1); opacity: 1;';
 				div_new.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0); opacity: 0;';
 				div_new.innerHTML = HTML;
+				// isert another DIV (needed for iScroll)
+				var tmp = $('.content', div_new)[0];
+				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; opacity: 1;';
@@ -309,6 +386,9 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0); opacity: 1;';
 				div_new.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0); opacity: 0;';
 				div_new.innerHTML = HTML;
+				// isert another DIV (needed for iScroll)
+				var tmp = $('.content', div_new)[0];
+				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; opacity: 1;';
@@ -329,6 +409,7 @@ function jsTouchBox(name, params) {
 		// -------
 		this.resize();
 		this.initScroll();
+		//setTimeout("window.elements['"+ this.name +"'].initScroll();", 600); // if init scroll right away, then it slides upwards
 	}
 	
 	function jsTouch_initScroll() {
@@ -343,35 +424,19 @@ function jsTouchBox(name, params) {
 		} else {
 			var div = $('#'+ this.name +' > .jsTouch.div2 > div.content')[0];
 		}
-		// destroy previous scroll
-		if (this.scroll) { this.scroll.destroy(); this.scroll = null; }
-		// init scroll
+		// if (this.scroll) this.scroll.destroy(); // if destoyed - it flicks
 		this.scroll = new iScroll(div, { desktopCompatibility: true, zoom: false });
-		window.tmp_scroll = this.scroll;
-		setTimeout(new Function("window.tmp_scroll.refresh()"), 100);
+		setTimeout(new Function("window.elements['"+ this.name +"'].scroll.refresh()"), 100);
 	}
 	
 	function jsTouch_initTabs() {
 		// if there are tabs - show/hide them, create onclick function
-		$('#'+ this.name +' div.footer a').each( function (i, el) {			
-			var tmp = String(el.href).split('#');
-			var id  = tmp[1];
-			if ($(el).hasClass('clicked')) { $('#'+id).show(); } else {	$('#'+id).hide(); }
-			$(el).bind('touchstart', function() { $(window.event.currentTarget).addClass('clicked'); });
-			$(el).click(function () {
+		$('#'+ this.name +' div.footer a').each( function (i, el) {	
+			$(el).bind('touchstart', function () { $(this).click(); });
+			$(el).bind('click', function() { 
 				var currObj = jsTouch.getCurrentBox(window.event.currentTarget);
-				// change clicked tab
 				$('#'+ currObj.name +' a').removeClass('clicked');
 				$(window.event.currentTarget).addClass('clicked'); 
-				// show/hide tabs
-				$('#'+ currObj.name +' div.footer a').each( function (i, el) {			
-					var tmp = String(el.href).split('#');
-					var id  = tmp[1];
-					if ($(el).hasClass('clicked')) { $('#'+id).show(); } else {	$('#'+id).hide(); }
-				});	
-				// init scroll
-				currObj.resize();
-				currObj.initScroll();
 			});
 		});
 	}
