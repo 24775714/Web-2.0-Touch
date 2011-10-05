@@ -41,26 +41,29 @@ var jsTouch = {
 	
 	overlayHTML: function(HTML, params, callBack) {
 		// parse parameters
-		var top 		= 52;
-		var left 		= 10;
+		var left		= null;
+		var top			= null;
 		var width  		= 300;
 		var height 		= 300;
 		var modal 		= false;
 		var opacity 	= 0.3;		
 		var bgcolor		= 'black';
 		if (typeof(params) == 'object') {
-			if (String(params['top']) 		!= 'undefined') width		= parseInt(params['top']);
-			if (String(params['left']) 		!= 'undefined') width		= parseInt(params['left']);
+			if (String(params['left']) 		!= 'undefined') left		= parseInt(params['left']);
+			if (String(params['top']) 		!= 'undefined') top			= parseInt(params['top']);
 			if (String(params['width']) 	!= 'undefined') width		= parseInt(params['width']);
 			if (String(params['height']) 	!= 'undefined') height		= parseInt(params['height']);
 			if (String(params['modal']) 	!= 'undefined') modal 		= params['modal'];
 			if (String(params['opacity']) 	!= 'undefined') opacity		= params['opacity'];
 			if (String(params['bgcolor']) 	!= 'undefined') bgcolor		= params['bgcolor'];
 		}
+		if (width  > window.innerWidth -10) width  = window.innerWidth - 10; 
+		if (height > window.innerHeight-10) height = window.innerHeight- 10;
 		// lock secreen
 		var lock = document.createElement('div');
 		lock.id = 'overlay_lock';
-		lock.style.cssText = 'z-Index: 9; background-color: '+ bgcolor +'; opacity: 0; position: fixed; left: 0px; top: 0px; '+
+		lock.style.cssText = 'z-Index: 9; background-color: '+ bgcolor +'; opacity: 0; '+
+			'position: absolute; left: '+ parseInt(document.body.scrollLeft) +'px; top: '+ parseInt(document.body.scrollTop) +'px; '+
 			'-webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-transition: all .4s ease-in-out; '+
 			'width: '+ window.innerWidth +'px; height: '+ window.innerHeight +'px;';
 		if (!modal) {
@@ -73,17 +76,25 @@ var jsTouch = {
 		$(document.body).append(lock);	
 		setTimeout("$('#overlay_lock').css('opacity', '"+ opacity +"');", 1); // otherwise transition is not working
 		
+		window.onscroll = function () {
+			var winTop 	= parseInt(document.body.scrollTop) + (parseInt(window.innerHeight) - height) / 2;
+			var winLeft = parseInt(document.body.scrollLeft) + (parseInt(window.innerWidth) - width) / 2;
+			$('#overlay_lock')[0].style.cssText += 'top: '+ parseInt(document.body.scrollTop)+'px; left: '+ parseInt(document.body.scrollLeft)+'px;'+
+				'width: '+ parseInt(window.innerWidth) +'px; height: '+ parseInt(window.innerHeight) +'px';  
+			$('#overlay_box').css('top', winTop+'px');
+			$('#overlay_box').css('left', winLeft+'px');
+		}
+		window.onresize = function () { window.onscroll(); }
+		
 		// create overlay
 		var div = document.createElement('div');
+		var winTop 	= parseInt(document.body.scrollTop) + (parseInt(window.innerHeight) - height) / 2;
+		var winLeft = parseInt(document.body.scrollLeft) + (parseInt(window.innerWidth) - width) / 2;
 		div.id = 'overlay_box';
 		div.className = 'overlay';
-		div.style.cssText += 'left: '+ left +'px; top: '+ top +'px; width: '+ width +'px; height: '+ height +'px; -webkit-border-radius: 5px; '+
+		div.style.cssText += 'left: '+ winLeft +'px; top: '+ winTop +'px; width: '+ width +'px; height: '+ height +'px; -webkit-border-radius: 5px; '+
 			'-webkit-transition: all .4s ease-in-out; opacity: 0;';
 		div.innerHTML = HTML;
-		// isert another DIV (needed for iScroll)
-		var tmp = $('.content', div)[0];
-		if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
-		
 		$(document.body).append(div);			
 		setTimeout("$('#overlay_box').css('opacity', '1');", 1); // otherwise transition is not working
 		// add clicked class when clicked on the link

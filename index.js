@@ -17,7 +17,6 @@ document.addEventListener('orientationchange', resize, false);
 window.addEventListener('resize', resize, false);
 
 function resize() {
-	console.log('resize');
 	var width  = parseInt(window.innerWidth);
 	var height = parseInt(window.innerHeight);
 	if (width > 1000 || height > 1000) {
