@@ -247,9 +247,6 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0);';
 				div_new.style.cssText += comcss +'-webkit-transform: translate3d('+ width +'px, 0, 0);';
 				div_new.innerHTML = HTML;
-				// isert another DIV (needed for iScroll)
-				var tmp = $('.content', div_new)[0];
-				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0px, 0, 0);';
@@ -262,9 +259,6 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0);';
 				div_new.style.cssText += comcss +'-webkit-transform: translate3d(-'+ width +'px, 0, 0);';
 				div_new.innerHTML = HTML;
-				// isert another DIV (needed for iScroll)
-				var tmp = $('.content', div_new)[0];
-				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0px, 0, 0);';
@@ -277,9 +271,6 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'z-index: 1; -webkit-transform: translate3d(0, 0, 0);';
 				div_new.style.cssText += comcss +'z-index: 0; -webkit-transform: translate3d(0, 0, 0);';
 				div_new.innerHTML = HTML;
-				// isert another DIV (needed for iScroll)
-				var tmp = $('.content', div_new)[0];
-				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0, 0, 0);';
@@ -292,9 +283,6 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0);';
 				div_new.style.cssText += comcss +'-webkit-transform: translate3d(0, '+ height +'px, 0);';
 				div_new.innerHTML = HTML;
-				// isert another DIV (needed for iScroll)
-				var tmp = $('.content', div_new)[0];
-				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0, 0, 0);';
@@ -307,9 +295,6 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: rotateY(0deg);';
 				div_new.style.cssText += comcss +'-webkit-transform: rotateY(-180deg);';
 				div_new.innerHTML = HTML;
-				// isert another DIV (needed for iScroll)
-				var tmp = $('.content', div_new)[0];
-				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateY(0deg);';
@@ -322,9 +307,6 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: rotateY(0deg);';
 				div_new.style.cssText += comcss +'-webkit-transform: rotateY(180deg);';
 				div_new.innerHTML = HTML;
-				// isert another DIV (needed for iScroll)
-				var tmp = $('.content', div_new)[0];
-				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateY(0deg);';
@@ -352,9 +334,6 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: rotateX(0deg);';
 				div_new.style.cssText += comcss +'-webkit-transform: rotateX(-180deg);';
 				div_new.innerHTML = HTML;
-				// isert another DIV (needed for iScroll)
-				var tmp = $('.content', div_new)[0];
-				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateX(0deg);';
@@ -367,9 +346,6 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0);';
 				div_new.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0); -webkit-transform: scale(.8); opacity: 0;';
 				div_new.innerHTML = HTML;
-				// isert another DIV (needed for iScroll)
-				var tmp = $('.content', div_new)[0];
-				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: scale(1); opacity: 1;';
@@ -382,9 +358,6 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0); -webkit-transform: scale(1); opacity: 1;';
 				div_new.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0); opacity: 0;';
 				div_new.innerHTML = HTML;
-				// isert another DIV (needed for iScroll)
-				var tmp = $('.content', div_new)[0];
-				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; opacity: 1;';
@@ -397,9 +370,6 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0); opacity: 1;';
 				div_new.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0); opacity: 0;';
 				div_new.innerHTML = HTML;
-				// isert another DIV (needed for iScroll)
-				var tmp = $('.content', div_new)[0];
-				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; opacity: 1;';
@@ -407,6 +377,14 @@ function jsTouchBox(name, params) {
 				}, 1);
 				break;
 		}
+		// isert another DIV (needed for iScroll)
+		var tmp = $('.content', div_new)[0];
+		if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
+		// insert <span> for back and forward buttons
+		var tmp = $('.toolbar .button.back', div_new)[0];
+		if (tmp) tmp.innerHTML = '<span class="s1"></span><span class="s2"></span>' + tmp.innerHTML;		
+		var tmp = $('.toolbar .button.next', div_new)[0];
+		if (tmp) tmp.innerHTML = '<span class="s1"></span><span class="s2"></span>' + tmp.innerHTML;		
 		// execute scripts
 		var d =	div_new.getElementsByTagName("script");
 		var t = d.length;
