@@ -3,7 +3,7 @@
  * Released under MIT license, http://cubiq.org/license
  */
 
-(function(){
+(function() {
 var m = Math,
 	vendor = (/webkit/i).test(navigator.appVersion) ? 'webkit' :
 		(/firefox/i).test(navigator.userAgent) ? 'Moz' :
