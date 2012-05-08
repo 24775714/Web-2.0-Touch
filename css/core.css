@@ -371,10 +371,9 @@ div.overlay div.content div.simple-title {
 div.jsTouch div.content input {
 	border: 0px;
 	width: 100%;
-	font-size: 18px;
+	font-size: 20px;
 	margin: 0px;
-	padding-left: 0px; 
-	padding-right: 0px;
+	padding: 6px 0px 0px 0px !important; 
 	-webkit-appearance: none !important;
 	-webkit-tap-highlight-color: rgba(0,0,0,0) !important;
 	color: black;

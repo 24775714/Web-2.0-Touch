@@ -3,7 +3,7 @@
  * Released under MIT license, http://cubiq.org/license
  */
 
-(function() {
+(function(){
 var m = Math,
 	vendor = (/webkit/i).test(navigator.appVersion) ? 'webkit' :
 		(/firefox/i).test(navigator.userAgent) ? 'Moz' :
@@ -90,7 +90,9 @@ var m = Math,
 
 			// Events
 			onRefresh: null,
-			onBeforeScrollStart: function (e) { e.preventDefault(); },
+			onBeforeScrollStart: function (e) { 
+				if (e.target && e.target.tagName != 'INPUT' && e.target.tagName != 'TEXTAREA') e.preventDefault(); 
+			},
 			onScrollStart: null,
 			onBeforeScrollMove: null,
 			onScrollMove: null,
