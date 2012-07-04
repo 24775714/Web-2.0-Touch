@@ -72,9 +72,6 @@ div.jsTouch div.toolbar h1{
 /* BLACK BUTTON WITH BLUE OVERLAY */
 
 .button	{
-	position: relative;
-	top: -26px;
-	float: right;
 	color: #fff;
 	text-decoration: none;
 	display: inline-block;
@@ -107,10 +104,10 @@ div.jsTouch div.toolbar h1{
 	-webkit-background-clip: content;
 }
 
-.button.back {
-	float: left;
-	padding-left: 5px;
-	margin-left: 8px;
+.button.back, .button.left {
+	position: absolute;
+	left: 12px;
+	top: 8px;
 }
 
 .back > span.s2 {
@@ -141,17 +138,16 @@ div.jsTouch div.toolbar h1{
 	-webkit-mask-position-y: 0px;
 	-webkit-mask-clip: border;
 	-webkit-box-sizing: border-box;	
-	-webkit-box-shadow: 0px 1px 0px #bbb;
 }	
 
 .back.clicked > span.s2 {
 	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#24CCFF), to(#1A83D4), color-stop(.5,#1A88DB),color-stop(.5,#187BC7));
 }
 
-.button.next {
-	float: right;
-	padding-right: 5px;
-	margin-right: 8px;
+.button.next, .button.right {
+	position: absolute;
+	right: 12px;
+	top: 8px;
 }
 
 .next > span.s2 {
@@ -159,7 +155,7 @@ div.jsTouch div.toolbar h1{
 	right: -9px;
 	height: 27px;
 	width: 12px;
-	background: -webkit-gradient(linear, left top, right bottom, from(#BCBDBF), to(#717882));
+	background: -webkit-gradient(linear,  0 0, 0 100%, from(#BCBDBF), to(#717882));
 	-webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABGCAYAAADb7SQ4AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAACk0lEQVRoQ8WZP2gUQRTGLwYCVlaBgK1tOokgBI50QTFgJQqBlBaWgoFgq72FZSrFSjAk2NkKtgEr25AiELASLgTz/ULmuGRvdmdn3rx78DW3cL/58755b2fnRmfnx4PB4L50JLnFLZGWpO/SHTeqQICJZemrtOAFD2B4a9LuLMAwn0tvPeBzSq7/U0Av9NvnmgOIgUeCrks/asEn93iSQZKRbCRdlYiBgWEvbLZYg9wGhndX2pduW8O7wPBWpC/SvCU8BQzvifRhFmCYL6XXVvCYnWL/f64HT6W90gH0BcP7Jw2lXyXw1D2eZJDhZPo9bzA8vF3k8ZwZh4kyY2yWVUpLwAwgu5SWgoFTSt/13W8LMMw3Vz5P5ufYKfbnvUqp1YwZTK9SagkGHkopVa01rMHAgHa2yzXAwOlcPknRUloLDPyRFC2lNcHAKaVYrRGWdmpLpka77AXG40PpZxhd7aUOHDz+TRqXUi8wA7hWSj3BwJkxTcSC1x7fTLwt7xmHASzPCjy+EWjzYI1nh7PYY9riVe+l/iPoY2nkCf4rIC/7J+ydF5gjk1cfZnwZXuAtsa5da3iAdwRtXOTUzmqAlMRG1ASztCQT++sG/i3SQ4lMnho19hi7bLRBa2Q1L+0cEGPbeM34mUBJNwWWS70taPLdiBX4o6DvY8taK6sPrpKJG6HkKPXxoUirXRk8bTQlS83HEw6IqFfbpp8LDiUu+8tNDpi93JRY5uzIAb/qYxurAwTLYJ3i6JPVHA50Eb1sExthKphjcChxFptEyh6HztAMysi7wNiG5b3sDC2jDRw6wyLb5GR1ozP0mDG2cf/EF+0MLWd8006tnWEtMLZ5IJ1aArqSC7tQ4lygwcfJnaHlSlwADTGshYz22ugAAAAASUVORK5CYII=);
 	-webkit-mask-size: 13px 27px;
 	-webkit-mask-repeat: no-repeat;
@@ -182,7 +178,6 @@ div.jsTouch div.toolbar h1{
 	-webkit-mask-position-y: 0px;
 	-webkit-mask-clip: border;
 	-webkit-box-sizing: border-box;	
-	-webkit-box-shadow: 0px 1px 0px #bbb;
 }	
 
 .next.clicked > span.s2 {
