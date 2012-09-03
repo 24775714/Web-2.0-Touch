@@ -4,6 +4,9 @@
 *                for touch devices (iPhone, iPad, iPod Touch, Android, etc.)
 * -- License   - Dual licenses MIT and GPL
 * -- Developer - vitmalina@gmail.com
+*
+* -- UPDATES:
+*				2012-09-01 toddwprice ~line 396: updated animate function to check if script tag type === "text/javascript" so templates stored in script tags as "text/template" aren't reloaded as scripts
 */
 
 var jsTouch = {
@@ -388,12 +391,16 @@ function jsTouchBox(name, params) {
 		// execute scripts
 		var d =	div_new.getElementsByTagName("script");
 		var t = d.length;
-		for (var x = 0; x < t; x++) {
-			var ns = document.createElement('script');
-			ns.type = "text/javascript";
-			if (d[x].text != '') ns.text = d[x].text;
-			if (d[x].src  != '') ns.src  = d[x].src;
-			div_new.appendChild(ns);
+		for (var x = 0; x < t; x++)
+		{
+			if (d[x].type === "text/javascript")
+			{
+				var ns = document.createElement('script');
+				ns.type = "text/javascript";
+				if (d[x].text != '') ns.text = d[x].text;
+				if (d[x].src != '') ns.src = d[x].src;
+				div_new.appendChild(ns);
+			}
 		}				
 		// -------
 		this.resize();
@@ -496,4 +503,4 @@ function jsTouchBox(name, params) {
 
 // -- few events
 window.addEventListener('resize', new Function("setTimeout(\"jsTouch.resize()\", 1)"));
-window.applicationCache.addEventListener('updateready', function(){ window.applicationCache.swapCache(); }, false);
+window.applicationCache.addEventListener('updateready', function () { window.applicationCache.swapCache(); window.location.reload(); }, false);
