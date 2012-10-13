@@ -536,7 +536,11 @@ function jsTouchBox(name, params) {
 			 	if (divX > 10) status = 'swipe-right';
 			 	if (divX <-10) status = 'swipe-left';
 
-			 	processSwipe(divX);
+			 	if (status != null) {
+					processSwipe(divX);
+					e.stopPropagation();
+					e.preventDefault();
+				}
 			};
 
 			function processSwipe(divX) {
