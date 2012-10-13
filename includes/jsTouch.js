@@ -164,7 +164,7 @@ var jsTouch = {
 
 function jsTouchBox(name, params) {
 	// -- variables
-	this.name		 = name;		// - unique name for the element
+	this.name		 = name;	// - unique name for the element
 	this.width		 = ''; 	    // - if empty - then full screen
 	this.height		 = ''; 	    // - if empty - then full screen	
 	// -- init function
@@ -175,6 +175,9 @@ function jsTouchBox(name, params) {
 	this.initTabs	 = jsTouch_initTabs;
 	this.initLinks	 = jsTouch_initLinks;
 	this.resize		 = jsTouch_resize;	
+	// -- swipes
+	this.onSwipeLeft = null;	// should be objects
+	this.onSwipeRight= null;
 	// -- internal variables
 	this._tmpCallBack;
 	this._tmpTimer;
@@ -409,6 +412,7 @@ function jsTouchBox(name, params) {
 	}
 	
 	function jsTouch_initScroll() {
+		var obj = this;
 		// make sure iScroll library is loaded
 		if (String(window.iScroll) == 'undefined') {
 			alert('You need to include iScroll.js library');
@@ -420,9 +424,150 @@ function jsTouchBox(name, params) {
 		} else {
 			var div = $('#'+ this.name +' > .jsTouch.div2 > div.content')[0];
 		}
-		// if (this.scroll) this.scroll.destroy(); // if destoyed - it flicks
-		this.scroll = new iScroll(div, { desktopCompatibility: true, zoom: false });
-		setTimeout(new Function("window.elements['"+ this.name +"'].scroll.refresh()"), 100);
+		// init scroll		
+
+		if ( typeof $(div).data('scroll') == 'object' ) {
+			this.scroll = $(div).data('scroll');
+			setTimeout(function () { window.elements[obj.name].scroll.refresh(); }, 100);
+		} else {
+			this.scroll = new iScroll(div, { desktopCompatibility: true, zoom: false });
+			$(div).data('scroll', this.scroll);
+			setTimeout(function () { window.elements[obj.name].scroll.refresh(); }, 100);
+		}
+
+		// if there is a swipe elemenet
+		if ($(div).find('.swipe').length > 0) {
+			if ($(div).find('div #_tmp_swipe').length == 0) {
+				$(div).find('.swipe').width($(div).width());
+				$(div).find('div').append('<div id="_tmp_swipe" style="height: '+ $(div).find('.swipe.current').height() + 'px;"></div>');
+			}
+			// show current of first
+			if ($(div).find('.swipe.current').length == 0) {
+				$($(div).find('.swipe')[0]).addClass('current');
+			}
+			// hide all
+			$(div).find('.swipe').not('.swipe.current').hide();
+			$(div).find('.swipe.current').show();
+			// insert sizing element
+			$(div).find('div #_tmp_swipe').height(1);
+			$(div).find('div #_tmp_swipe').height($(div).find('.swipe.current').height());
+			//$(div).find('div #_tmp_swipe').remove();
+			//$(div).find('div').append('<div id="_tmp_swipe" style="height: '+ $(div).find('.swipe.current').height() + 'px;"></div>');
+
+			// init swipe events
+			var obj 	= this;
+			var currX   = null, 
+				currY   = null, 
+				divX 	= null,
+				divY 	= null,
+				timer 	= null,
+				status  = null;
+			var curr = $(div).find('.swipe.current');
+			var prev = $(div).find('.swipe.current').prev('.swipe');
+			var next = $(div).find('.swipe.current').next('.swipe');
+
+			$(div)[0].ontouchstart  = function (e) { 
+				timer = (new Date()).getTime();
+			}
+
+			$(div)[0].ontouchend  = function (e) { 
+				var span = (new Date()).getTime() - timer;
+				currX 	= null; 
+				currY 	= null; 
+				if (status == 'swipe-left' && $(next).length > 0 && ((divX < -20 && span < 200) || (divX < -60))) { // swipe left
+					divX 	= null;
+					status	= null;
+					$(curr).css({
+						'-webkit-transition' 	: 'all .2s ease-in-out', 
+						'-webkit-transform' 	: 'translate3d(-'+ parseInt($(div).width()) +'px, 0px, 0px)'
+					});
+					$(next).css({
+						'-webkit-transition' 	: 'all .2s ease-in-out', 
+						'-webkit-transform' 	: 'translate3d(-'+ parseInt($(div).width()) +'px, 0px, 0px)'
+					});
+					setTimeout(function () {
+						$(curr).removeClass('current');
+						$(next).addClass('current');
+						// init scroll
+						obj.scroll.scrollTo(0,0);
+						obj.initScroll();
+					}, 250);
+					return;
+				}
+				if (status == 'swipe-right' && $(prev).length > 0 && ((divX > 20 && span < 200) || (divX > 60))) { // swipe right
+					divY = null;
+					status	= null;
+					$(curr).css({
+						'-webkit-transition' 	: 'all .2s ease-in-out', 
+						'-webkit-transform' 	: 'translate3d('+ parseInt($(div).width()) +'px, 0px, 0px)'
+					});
+					$(prev).css({
+						'-webkit-transition' 	: 'all .2s ease-in-out', 
+						'-webkit-transform' 	: 'translate3d('+ parseInt($(div).width()) +'px, 0px, 0px)'
+					});
+					setTimeout(function () {
+						$(curr).removeClass('current');
+						$(prev).addClass('current');
+						// init scroll
+						obj.scroll.scrollTo(0,0);
+						obj.initScroll();
+					}, 250);
+					return;
+				}
+				// return to previous spots
+				divX	= null;
+				divY	= null;
+				status	= null;
+				$(curr).add(next).add(prev).css({ 
+					'-webkit-transition' : 'all .2s ease-in-out',
+					'-webkit-transform' : 'translate3d(0px, 0px, 0px)'
+				});
+			}
+
+			$(div)[0].ontouchmove = function (e) {
+			 	var touch = e.touches[0];
+			 	if (currX == null) { currX = touch.pageX; }
+			 	if (currY == null) { currY = touch.pageY; }
+			 	divX = touch.pageX - currX;
+			 	divY = touch.pageY - currY;
+
+			 	if (Math.abs(divY) > 10 && status == null) status = 'none';
+			 	if (status == 'none') return;
+			 	if (divX > 10) status = 'swipe-right';
+			 	if (divX <-10) status = 'swipe-left';
+
+			 	processSwipe(divX);
+			};
+
+			function processSwipe(divX) {
+				var factor = 1;
+				if (divX > 0 && prev.length == 0) factor = 3;
+				if (divX < 0 && next.length == 0) factor = 3;
+				// current
+				$(curr).css({ 
+					'left' 	: '0px',
+					'top' 	: '0px',
+					'-webkit-transition' 	: 'none', 
+					'-webkit-transform' 	: 'translate3d('+ (divX/factor) +'px, 0px, 0px)'
+				});
+				if (divX < 0 && $(next).length > 0) { // move left
+					$(next).css({
+						'left' 	: parseInt($(div).width()) + 'px',
+						'top' 	: '0px',
+						'-webkit-transition' 	: 'none', 
+						'-webkit-transform' 	: 'translate3d('+ divX +'px, 0px, 0px)'
+					}).show();
+				}
+				if (divX > 0) { // move right
+					$(prev).css({
+						'left' 	: '-' + parseInt($(div).width()) + 'px',
+						'top' 	: '0px',
+						'-webkit-transition' 	: 'none', 
+						'-webkit-transform' 	: 'translate3d('+ divX +'px, 0px, 0px)'
+					}).show();
+				}
+			}
+		}
 	}
 	
 	function jsTouch_initTabs() {

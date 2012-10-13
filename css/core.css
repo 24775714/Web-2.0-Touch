@@ -412,3 +412,13 @@ div.jsTouch div.content span.toggle input[type=checkbox] {
 	-webkit-tap-highlight-color: rgba(0,0,0,0);
 	-webkit-transition: margin .15s;
 }
+
+div.jsTouch div.content .swipe {
+	position: absolute;
+	display: none;
+	left: 0px;
+	top: 0px;
+	height: auto;
+	-webkit-transition: none;
+	-webkit-transform: translate3d(0px, 0px, 0px); /* need this to prevent initial flick */
+}
