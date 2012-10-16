@@ -1,0 +1,45 @@
+<project name="w2touch" basedir="." default="build">
+	<property name="version" 	value="1.0"/>
+	<property name="build.dir"	value="BUILD"/>
+
+	<property name="ftp-host"	value="w2ui.com"/>
+	<property name="ftp-user"	value="root"/>
+	<property name="ftp-dir"	value="/var/www/web20boom/demo/touch"/>
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+	</target>
+
+	<target name="build" depends="clean">
+
+		<buildnumber file="build.number" />	
+ 		<echo>BUILD Number: ${build.number}</echo>
+
+		<replaceregexp file="./cache.manifest" match="^# Version .* Build:.*$" replace="# Version ${version} Build: ${build.number}" byline="true"/>	
+
+		<mkdir dir="${build.dir}"/>
+
+		<!-- tar, then gzip only relevant files -->
+
+		<tar destfile="${build.dir}/w2touch.tar">
+			<tarfileset dir=".">
+				<exclude name="BUILD/**"/>
+				<exclude name="build.xml"/>
+				<exclude name="build.number"/>
+			</tarfileset>
+		</tar>
+		<gzip src="${build.dir}/w2touch.tar" destfile="${build.dir}/w2touch.tar.gz"/>
+
+		<!-- upload to ftp ant unzip -->
+
+		<input message="       ---> Please enter ${ftp-user} password for ${ftp-host}:" addproperty="ftp-pass"> 
+			<handler type="secure"/>
+		</input>
+
+  		<scp file="${build.dir}/w2touch.tar.gz" todir="${ftp-user}:${ftp-pass}@${ftp-host}:${ftp-dir}" trust="true"/>
+
+		<sshexec host="${ftp-host}" username="${ftp-user}" password="${ftp-pass}"
+			command="cd ${ftp-dir}; tar -xzvf w2touch.tar.gz > /dev/null; rm -f ${ftp-dir}/w2touch.tar.gz;"/>
+
+	</target>
+</project>

@@ -651,5 +651,14 @@ function jsTouchBox(name, params) {
 }
 
 // -- few events
-window.addEventListener('resize', new Function("setTimeout(\"jsTouch.resize()\", 1)"));
-window.applicationCache.addEventListener('updateready', function () { window.applicationCache.swapCache(); window.location.reload(); }, false);
+window.addEventListener('resize', function () {
+	setTimeout("jsTouch.resize()", 1);
+});
+
+window.applicationCache.addEventListener('updateready', function () { 
+	try {
+		window.applicationCache.swapCache(); 
+	} finally {
+		document.location = document.location;
+	}
+}, false);

@@ -1,7 +1,9 @@
 <?
 header("Content-Type: text/cache-manifest");
 $hash = "";
-$data = "CACHE MANIFEST\n";
+$data = "# Version 1.0 Build: XXX
+
+CACHE MANIFEST\n";
 
 // read all files and their hashes
 $dir = new RecursiveDirectoryIterator(".");
