@@ -16,9 +16,14 @@ var jsTouch = {
 		if (params && typeof(params) == 'object' && params['page']) tmpTouch.loadPage(params['page']);
 		return tmpTouch;
 	},
-	
+
 	loadPage: function(url, params, callBack) {
 		if (window.event) { var currObj = this.getCurrentBox(window.event.target); }
+		// check if this is an overlay
+		if (currObj == 'overlay_box') {
+			this.overlayPage(url);
+			return;
+		}
 		// if target is defined - open there
 		if (params && typeof(params) == 'object' && params['target']) {
 			window.elements[params['target']].loadPage(url, params, callBack);
@@ -26,7 +31,7 @@ var jsTouch = {
 			currObj.loadPage(url, params, callBack);
 		}
 	},
-	
+
 	loadContent: function(url, params, callBack) {
 		if (window.event) { var currObj = this.getCurrentBox(window.event.target); }
 		// if target is defined - open there
@@ -34,14 +39,14 @@ var jsTouch = {
 			window.elements[params['target']].loadContent(url, params, callBack);
 		} else {
 			if (currObj) {
-				currObj.loadContent(url, params, callBack); 
+				currObj.loadContent(url, params, callBack);
 			} else {
 				// no current object -> loading into last current
-				this.lastCurrObj.loadContent(url, params, callBack); 
+				this.lastCurrObj.loadContent(url, params, callBack);
 			}
 		}
 	},
-	
+
 	overlayHTML: function(HTML, params, callBack) {
 		// parse parameters
 		var left		= null;
@@ -49,8 +54,9 @@ var jsTouch = {
 		var width  		= 300;
 		var height 		= 300;
 		var modal 		= false;
-		var opacity 	= 0.3;		
+		var opacity 	= 0.3;
 		var bgcolor		= 'black';
+		var speed		= 0.4;	// in seconds
 		if (typeof(params) == 'object') {
 			if (String(params['left']) 		!= 'undefined') left		= parseInt(params['left']);
 			if (String(params['top']) 		!= 'undefined') top			= parseInt(params['top']);
@@ -59,36 +65,37 @@ var jsTouch = {
 			if (String(params['modal']) 	!= 'undefined') modal 		= params['modal'];
 			if (String(params['opacity']) 	!= 'undefined') opacity		= params['opacity'];
 			if (String(params['bgcolor']) 	!= 'undefined') bgcolor		= params['bgcolor'];
+			if (String(params['speed']) 	!= 'undefined') speed		= params['speed'];
 		}
-		if (width  > window.innerWidth -10) width  = window.innerWidth - 10; 
+		if (width  > window.innerWidth -10) width  = window.innerWidth - 10;
 		if (height > window.innerHeight-10) height = window.innerHeight- 10;
 		// lock secreen
 		var lock = document.createElement('div');
 		lock.id = 'overlay_lock';
 		lock.style.cssText = 'z-Index: 9; background-color: '+ bgcolor +'; opacity: 0; '+
 			'position: absolute; left: '+ parseInt(document.body.scrollLeft) +'px; top: '+ parseInt(document.body.scrollTop) +'px; '+
-			'-webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-transition: all .4s ease-in-out; '+
+			'-webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-transition: all '+ speed + 's ease-in-out; '+
 			'width: '+ window.innerWidth +'px; height: '+ window.innerHeight +'px;';
 		if (!modal) {
 			lock.onclick = function (e) { jsTouch.overlayClose(); };
 		} else {
 			// if modal flash red background
 			lock.ontouchstart = function (e) { $('#overlay_lock')[0].style.cssText += '-webkit-transition: none; background-color: white;'; };
-			lock.ontouchend   = function (e) { $('#overlay_lock')[0].style.cssText += '-webkit-transition: all .4s ease-in-out; background-color: black;'; };
+			lock.ontouchend   = function (e) { $('#overlay_lock')[0].style.cssText += '-webkit-transition: all '+ speed +'s ease-in-out; background-color: black;'; };
 		}
-		$(document.body).append(lock);	
+		$(document.body).append(lock);
 		setTimeout("$('#overlay_lock').css('opacity', '"+ opacity +"');", 1); // otherwise transition is not working
-		
+
 		window.onscroll = function () {
 			var winTop 	= parseInt(document.body.scrollTop) + (parseInt(window.innerHeight) - height) / 2;
 			var winLeft = parseInt(document.body.scrollLeft) + (parseInt(window.innerWidth) - width) / 2;
 			$('#overlay_lock')[0].style.cssText += 'top: '+ parseInt(document.body.scrollTop)+'px; left: '+ parseInt(document.body.scrollLeft)+'px;'+
-				'width: '+ parseInt(window.innerWidth) +'px; height: '+ parseInt(window.innerHeight) +'px';  
+				'width: '+ parseInt(window.innerWidth) +'px; height: '+ parseInt(window.innerHeight) +'px';
 			$('#overlay_box').css('top', winTop+'px');
 			$('#overlay_box').css('left', winLeft+'px');
 		}
 		window.onresize = function () { window.onscroll(); }
-		
+
 		// create overlay
 		var div = document.createElement('div');
 		var winTop 	= parseInt(document.body.scrollTop) + (parseInt(window.innerHeight) - height) / 2;
@@ -96,57 +103,73 @@ var jsTouch = {
 		div.id = 'overlay_box';
 		div.className = 'overlay';
 		div.style.cssText += 'left: '+ winLeft +'px; top: '+ winTop +'px; width: '+ width +'px; height: '+ height +'px; -webkit-border-radius: 5px; '+
-			'-webkit-transition: all .4s ease-in-out; opacity: 0;';
+			'-webkit-transition: all '+ speed +'s ease-in-out; opacity: 0;';
 		div.innerHTML = HTML;
-		$(document.body).append(div);			
+		$(document.body).append(div);
 		setTimeout("$('#overlay_box').css('opacity', '1');", 1); // otherwise transition is not working
 		// add clicked class when clicked on the link
 		$('#overlay_box a').click(new Function(
 			"$('#overlay_box a').removeClass('clicked');"+
 			"$(this).addClass('clicked');"));
 	},
-	
+
 	overlayPage: function(url, params, callBack) {
-		// create HTML overlay
-		this.overlayHTML('<div class="content"></div>', params, callBack);
+		if (!$.isPlainObject(params)) params = {};
+		if (typeof params['delay'] == 'undefined') params['delay'] = 0;
+		// check if overlay is opened, and close it fast
+		if ($('#overlay_box').length > 0) {
+			if (window.event && window.event.target.tagName == 'a') $(window.event.target).addClass('clicked');
+			params['speed'] = 0;
+			params['delay'] = 200;
+		}
 		// load overlay content
-		$.get(url, {}, function (data) {
-			$('#overlay_box').html(data);
-			// isert another DIV (needed for iScroll)
-			var tmp = $('.content', $('#overlay_box'))[0];
-			if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
-			
-			// check presens of footer and toolbar
-			var isToolbar = ($('div.overlay div.toolbar').length > 0 ? true : false);
-			var isFooter  = ($('div.overlay div.footer').length > 0 ? true : false);		
-			if (isToolbar) $('div.overlay div.content').css('top', '45px');
-			if (isFooter) $('div.overlay div.content').css('bottom', '60px');
-			// init scroll
-			if (jsTouch.overlay_scroll) { jsTouch.overlay_scroll.destroy(); jsTouch.overlay_scroll.scroll = null; }
-			jsTouch.overlay_scroll = new iScroll($('div.overlay div.content')[0], { desktopCompatibility: true, zoom: false });
-			// for buttons on top do it on touch start
-			$('#overlay_box a.button').bind('touchstart', new Function(
-				"$('#overlay_box a').removeClass('clicked');"+
-				"$(this).addClass('clicked');"));
-			// add clicked class when clicked on the link
-			$('#overlay_box a').click(new Function(
-				"$('#overlay_box a').removeClass('clicked');"+
-				"$(this).addClass('clicked');"));
-		});		
+		setTimeout(function () {
+			// close previous
+			if ($('#overlay_box').length > 0) {
+				jsTouch.overlayClose(params['speed']);
+			}
+			// create HTML overlay
+			jsTouch.overlayHTML('<div class="content"></div>', params);
+			$.get(url, {}, function (data) {
+				$('#overlay_box').html(data);
+				// isert another DIV (needed for iScroll)
+				var tmp = $('.content', $('#overlay_box'))[0];
+				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
+
+				// check presens of footer and toolbar
+				var isToolbar = ($('div.overlay div.toolbar').length > 0 ? true : false);
+				var isFooter  = ($('div.overlay div.footer').length > 0 ? true : false);
+				if (isToolbar) $('div.overlay div.content').css('top', '45px');
+				if (isFooter) $('div.overlay div.content').css('bottom', '60px');
+				// init scroll
+				if (jsTouch.overlay_scroll) { jsTouch.overlay_scroll.destroy(); jsTouch.overlay_scroll.scroll = null; }
+				jsTouch.overlay_scroll = new iScroll($('div.overlay div.content')[0], { desktopCompatibility: true, zoom: false });
+				// for buttons on top do it on touch start
+				$('#overlay_box a.button').bind('touchstart', new Function(
+					"$('#overlay_box a').removeClass('clicked');"+
+					"$(this).addClass('clicked');"));
+				// add clicked class when clicked on the link
+				$('#overlay_box a').click(new Function(
+					"$('#overlay_box a').removeClass('clicked');"+
+					"$(this).addClass('clicked');"));
+				// call back
+				if (typeof callBack == 'function') callBack();
+			});
+		}, params['delay']);
 	},
-	
-	overlayClose: function() {
+
+	overlayClose: function(speed) {
 		$('#overlay_box').remove();
 		$('#overlay_lock')[0].style.opacity = 0;
-		setTimeout("$('#overlay_lock').remove();", 400);
+		setTimeout("$('#overlay_lock').remove();", (typeof speed == 'undefined' ? 400 : speed));
 	},
-	
+
 	resize: function() {
 		for (el in window.elements) {
 			window.elements[el].resize();
 		}
 	},
-	
+
 	getCurrentBox: function(el) {
 		var currObj = null;
 		var tmp 	= el;
@@ -154,6 +177,10 @@ var jsTouch = {
 			if (tmp.tagName == 'DIV' && window.elements[tmp.id]) {
 				currObj = window.elements[tmp.id];
 				break;
+			}
+			if (tmp.tagName == 'DIV' && tmp.id == 'overlay_box') {
+				currObj = 'overlay_box';
+				return currObj;
 			}
 			tmp = tmp.parentNode;
 		}
@@ -166,7 +193,7 @@ function jsTouchBox(name, params) {
 	// -- variables
 	this.name		 = name;	// - unique name for the element
 	this.width		 = ''; 	    // - if empty - then full screen
-	this.height		 = ''; 	    // - if empty - then full screen	
+	this.height		 = ''; 	    // - if empty - then full screen
 	// -- init function
 	this.loadPage	 = jsTouch_loadPage;
 	this.loadContent = jsTouch_loadContent;
@@ -174,7 +201,7 @@ function jsTouchBox(name, params) {
 	this.initScroll	 = jsTouch_initScroll;
 	this.initTabs	 = jsTouch_initTabs;
 	this.initLinks	 = jsTouch_initLinks;
-	this.resize		 = jsTouch_resize;	
+	this.resize		 = jsTouch_resize;
 	// -- swipes
 	this.onSwipeLeft = null;	// should be objects
 	this.onSwipeRight= null;
@@ -182,15 +209,15 @@ function jsTouchBox(name, params) {
 	this._tmpCallBack;
 	this._tmpTimer;
 	this._lastDiv;
-		
+
 	function jsTouch_loadPage(url, params, callBack) {
-		// -- save some temp variables		
+		// -- save some temp variables
 		this._tmpCallBack	= callBack;
 		// -- get the page
-		this._tmpTimer = window.setTimeout(new Function("$('#"+ this.name +"').append('<div class=\"progress\">Loading...</div>')"), 200);		
-		$.get(url, {}, new Function("data", 
+		this._tmpTimer = window.setTimeout(new Function("$('#"+ this.name +"').append('<div class=\"progress\">Loading...</div>')"), 200);
+		$.get(url, {}, new Function("data",
 			"$('#"+ this.name +" > .progress').remove(); "+
-			"var obj = window.elements['"+ ((typeof(params) == 'object' && params['target']) ? params['target'] : this.name) +"']; "+ 
+			"var obj = window.elements['"+ ((typeof(params) == 'object' && params['target']) ? params['target'] : this.name) +"']; "+
 			"if (obj && typeof(obj) == 'object') { "+
 			"	clearTimeout(obj._tmpTimer); "+
 			"	obj.animate(data, '"+ ((typeof(params) == 'object' && params['transition']) ? params['transition'] : "") +"'); "+
@@ -200,15 +227,15 @@ function jsTouchBox(name, params) {
 			"}")
 		);
 	}
-	
+
 	function jsTouch_loadContent(url, params, callBack) {
-		// -- save some temp variables		
+		// -- save some temp variables
 		this._tmpCallBack	= callBack;
 		// -- get the page
-		this._tmpTimer = window.setTimeout(new Function("$('#"+ this.name +"').append('<div class=\"progress\">Loading...</div>')"), 200);		
-		$.get(url, {}, new Function("data", 
+		this._tmpTimer = window.setTimeout(new Function("$('#"+ this.name +"').append('<div class=\"progress\">Loading...</div>')"), 200);
+		$.get(url, {}, new Function("data",
 			"$('#"+ this.name +" > .progress').remove();"+
-			"var obj = window.elements['"+ ((typeof(params) == 'object' && params['target']) ? params['target'] : this.name) +"']; "+ 
+			"var obj = window.elements['"+ ((typeof(params) == 'object' && params['target']) ? params['target'] : this.name) +"']; "+
 			"if (obj && typeof(obj) == 'object') { "+
 			"	clearTimeout(obj._tmpTimer); "+
 			"	if (obj._lastDiv) {"+
@@ -222,7 +249,7 @@ function jsTouchBox(name, params) {
 			"}")
 		);
 	}
-	
+
 	function jsTouch_animate(HTML, transition) {
 		// get width and height of the div
 		var width  = this.width;
@@ -242,11 +269,11 @@ function jsTouchBox(name, params) {
 			this._lastDiv = true;
 		}
 		$('#'+this.name)[0].style.cssText += '-webkit-perspective: 700px; overflow: hidden;';
-		
+
 		var comcss = ' width: '+ width +'px; height: '+ height +'px; overflow: hidden;';
 		div_old.style.cssText = 'position: absolute; z-index: 0; -webkit-backface-visibility: hidden;';
 		div_new.style.cssText = 'position: absolute; z-index: 1; -webkit-backface-visibility: hidden;';
-		
+
 		switch (transition) {
 			case 'slide-left':
 				// init divs
@@ -259,7 +286,7 @@ function jsTouchBox(name, params) {
 					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(-'+ width +'px, 0, 0);';
 				}, 1);
 				break;
-				
+
 			case 'slide-right':
 				// init divs
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0);';
@@ -271,7 +298,7 @@ function jsTouchBox(name, params) {
 					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d('+ width +'px, 0, 0);';
 				}, 1);
 				break;
-							
+
 			case 'slide-down':
 				// init divs
 				div_old.style.cssText += comcss +'z-index: 1; -webkit-transform: translate3d(0, 0, 0);';
@@ -283,7 +310,7 @@ function jsTouchBox(name, params) {
 					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0, '+ height +'px, 0);';
 				}, 1);
 				break;
-			
+
 			case 'slide-up':
 				// init divs
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0);';
@@ -295,7 +322,7 @@ function jsTouchBox(name, params) {
 					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: translate3d(0, 0, 0);';
 				}, 1);
 				break;
-				
+
 			case 'flip-left':
 				// init divs
 				div_old.style.cssText += comcss +'-webkit-transform: rotateY(0deg);';
@@ -307,7 +334,7 @@ function jsTouchBox(name, params) {
 					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateY(180deg);';
 				}, 1);
 				break;
-				
+
 			case 'flip-right':
 				// init divs
 				div_old.style.cssText += comcss +'-webkit-transform: rotateY(0deg);';
@@ -319,7 +346,7 @@ function jsTouchBox(name, params) {
 					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateY(-180deg);';
 				}, 1);
 				break;
-				
+
 			case 'flip-top':
 				// init divs
 				div_old.style.cssText += comcss +'-webkit-transform: rotateX(0deg);';
@@ -334,7 +361,7 @@ function jsTouchBox(name, params) {
 					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateX(-180deg);';
 				}, 1);
 				break;
-				
+
 			case 'flip-bottom':
 				// init divs
 				div_old.style.cssText += comcss +'-webkit-transform: rotateX(0deg);';
@@ -346,7 +373,7 @@ function jsTouchBox(name, params) {
 					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateX(180deg);';
 				}, 1);
 				break;
-				
+
 			case 'pop-in':
 				// init divs
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0);';
@@ -358,7 +385,7 @@ function jsTouchBox(name, params) {
 					div_old.style.cssText += '-webkit-transition: .5s;';
 				}, 1);
 				break;
-				
+
 			case 'pop-out':
 				// init divs
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0); -webkit-transform: scale(1); opacity: 1;';
@@ -370,7 +397,7 @@ function jsTouchBox(name, params) {
 					div_old.style.cssText += '-webkit-transition: .5s; -webkit-transform: scale(1.7); opacity: 0;';
 				}, 1);
 				break;
-				
+
 			default:
 				// init divs
 				div_old.style.cssText += comcss +'-webkit-transform: translate3d(0, 0, 0); opacity: 1;';
@@ -388,9 +415,9 @@ function jsTouchBox(name, params) {
 		if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 		// insert <span> for back and forward buttons
 		var tmp = $('.toolbar .button.back', div_new)[0];
-		if (tmp) tmp.innerHTML = '<span class="s1"></span><span class="s2"></span>' + tmp.innerHTML;		
+		if (tmp) tmp.innerHTML = '<span class="s1"></span><span class="s2"></span>' + tmp.innerHTML;
 		var tmp = $('.toolbar .button.next', div_new)[0];
-		if (tmp) tmp.innerHTML = '<span class="s1"></span><span class="s2"></span>' + tmp.innerHTML;		
+		if (tmp) tmp.innerHTML = '<span class="s1"></span><span class="s2"></span>' + tmp.innerHTML;
 		// execute scripts
 		var d =	div_new.getElementsByTagName("script");
 		var t = d.length;
@@ -404,13 +431,13 @@ function jsTouchBox(name, params) {
 				if (d[x].src != '') ns.src = d[x].src;
 				div_new.appendChild(ns);
 			}
-		}				
+		}
 		// -------
 		this.resize();
 		this.initScroll();
 		//setTimeout("window.elements['"+ this.name +"'].initScroll();", 600); // if init scroll right away, then it slides upwards
 	}
-	
+
 	function jsTouch_initScroll() {
 		var obj = this;
 		// make sure iScroll library is loaded
@@ -424,7 +451,7 @@ function jsTouchBox(name, params) {
 		} else {
 			var div = $('#'+ this.name +' > .jsTouch.div2 > div.content')[0];
 		}
-		// init scroll		
+		// init scroll
 
 		if ( typeof $(div).data('scroll') == 'object' ) {
 			this.scroll = $(div).data('scroll');
@@ -456,8 +483,8 @@ function jsTouchBox(name, params) {
 
 			// init swipe events
 			var obj 	= this;
-			var currX   = null, 
-				currY   = null, 
+			var currX   = null,
+				currY   = null,
 				divX 	= null,
 				divY 	= null,
 				timer 	= null,
@@ -466,23 +493,23 @@ function jsTouchBox(name, params) {
 			var prev = $(div).find('.swipe.current').prev('.swipe');
 			var next = $(div).find('.swipe.current').next('.swipe');
 
-			$(div)[0].ontouchstart  = function (e) { 
+			$(div)[0].ontouchstart  = function (e) {
 				timer = (new Date()).getTime();
 			}
 
-			$(div)[0].ontouchend  = function (e) { 
+			$(div)[0].ontouchend  = function (e) {
 				var span = (new Date()).getTime() - timer;
-				currX 	= null; 
-				currY 	= null; 
+				currX 	= null;
+				currY 	= null;
 				if (status == 'swipe-left' && $(next).length > 0 && ((divX < -20 && span < 200) || (divX < -60))) { // swipe left
 					divX 	= null;
 					status	= null;
 					$(curr).css({
-						'-webkit-transition' 	: 'all .2s ease-in-out', 
+						'-webkit-transition' 	: 'all .2s ease-in-out',
 						'-webkit-transform' 	: 'translate3d(-'+ parseInt($(div).width()) +'px, 0px, 0px)'
 					});
 					$(next).css({
-						'-webkit-transition' 	: 'all .2s ease-in-out', 
+						'-webkit-transition' 	: 'all .2s ease-in-out',
 						'-webkit-transform' 	: 'translate3d(-'+ parseInt($(div).width()) +'px, 0px, 0px)'
 					});
 					setTimeout(function () {
@@ -498,11 +525,11 @@ function jsTouchBox(name, params) {
 					divY = null;
 					status	= null;
 					$(curr).css({
-						'-webkit-transition' 	: 'all .2s ease-in-out', 
+						'-webkit-transition' 	: 'all .2s ease-in-out',
 						'-webkit-transform' 	: 'translate3d('+ parseInt($(div).width()) +'px, 0px, 0px)'
 					});
 					$(prev).css({
-						'-webkit-transition' 	: 'all .2s ease-in-out', 
+						'-webkit-transition' 	: 'all .2s ease-in-out',
 						'-webkit-transform' 	: 'translate3d('+ parseInt($(div).width()) +'px, 0px, 0px)'
 					});
 					setTimeout(function () {
@@ -518,7 +545,7 @@ function jsTouchBox(name, params) {
 				divX	= null;
 				divY	= null;
 				status	= null;
-				$(curr).add(next).add(prev).css({ 
+				$(curr).add(next).add(prev).css({
 					'-webkit-transition' : 'all .2s ease-in-out',
 					'-webkit-transform' : 'translate3d(0px, 0px, 0px)'
 				});
@@ -548,17 +575,17 @@ function jsTouchBox(name, params) {
 				if (divX > 0 && prev.length == 0) factor = 3;
 				if (divX < 0 && next.length == 0) factor = 3;
 				// current
-				$(curr).css({ 
+				$(curr).css({
 					'left' 	: '0px',
 					'top' 	: '0px',
-					'-webkit-transition' 	: 'none', 
+					'-webkit-transition' 	: 'none',
 					'-webkit-transform' 	: 'translate3d('+ (divX/factor) +'px, 0px, 0px)'
 				});
 				if (divX < 0 && $(next).length > 0) { // move left
 					$(next).css({
 						'left' 	: parseInt($(div).width()) + 'px',
 						'top' 	: '0px',
-						'-webkit-transition' 	: 'none', 
+						'-webkit-transition' 	: 'none',
 						'-webkit-transform' 	: 'translate3d('+ divX +'px, 0px, 0px)'
 					}).show();
 				}
@@ -566,26 +593,26 @@ function jsTouchBox(name, params) {
 					$(prev).css({
 						'left' 	: '-' + parseInt($(div).width()) + 'px',
 						'top' 	: '0px',
-						'-webkit-transition' 	: 'none', 
+						'-webkit-transition' 	: 'none',
 						'-webkit-transform' 	: 'translate3d('+ divX +'px, 0px, 0px)'
 					}).show();
 				}
 			}
 		}
 	}
-	
+
 	function jsTouch_initTabs() {
 		// if there are tabs - show/hide them, create onclick function
-		$('#'+ this.name +' div.footer a').each( function (i, el) {	
+		$('#'+ this.name +' div.footer a').each( function (i, el) {
 			$(el).bind('touchstart', function () { $(this).click(); });
-			$(el).bind('click', function() { 
+			$(el).bind('click', function() {
 				var currObj = jsTouch.getCurrentBox(window.event.currentTarget);
 				$('#'+ currObj.name +' a').removeClass('clicked');
-				$(window.event.currentTarget).addClass('clicked'); 
+				$(window.event.currentTarget).addClass('clicked');
 			});
 		});
 	}
-	
+
 	function jsTouch_initLinks() {
 		// toolbar imediate click
 		$('#'+ this.name +' div.toolbar a').bind('touchstart', new Function(
@@ -596,7 +623,7 @@ function jsTouchBox(name, params) {
 			"$('#"+ this.name +" div.toolbar a, #"+ this.name +" div.content a').removeClass('clicked');"+
 			"$(this).addClass('clicked');"));
 	}
-	
+
 	function jsTouch_resize() {
 		// get width and height of the div
 		var width  = this.width;
@@ -621,24 +648,24 @@ function jsTouchBox(name, params) {
 		$('#'+ this.name +' div.div2').css('width', width+'px');
 		$('#'+ this.name).css('height', height+'px');
 		$('#'+ this.name +' div.div1').css('height', height+'px');
-		$('#'+ this.name +' div.div2').css('height', height+'px');		
+		$('#'+ this.name +' div.div2').css('height', height+'px');
 		// -- toolbar and footer
 		$('#'+ this.name +' div.toolbar').css('width', width+'px');
 		$('#'+ this.name +' div.footer').css('width', width+'px');
 		// -- set scroll to 0, 0 (in the browser it will hide url bar)
-		window.scrollTo(0, 1);		
+		window.scrollTo(0, 1);
 	}
-	
+
 	// -- register in elements array
     if (!window.elements) window.elements = [];
     if (window.elements[this.name]) alert('The element with this name "'+ this.name +'" is already registered.');
     window.elements[this.name] = this;
-	
+
 	// -- init all param variables
 	if (params != null && typeof(params) == 'object' && String(params) == '[object Object]') { // javascript object
 		for (var e in params) { this[e] = params[e]; }
-	}		
-	
+	}
+
 	// -- append 2 divs into the box (needed for transitions)
 	var div1 = document.createElement('DIV');
 	var div2 = document.createElement('DIV');
@@ -655,9 +682,9 @@ window.addEventListener('resize', function () {
 	setTimeout("jsTouch.resize()", 1);
 });
 
-window.applicationCache.addEventListener('updateready', function () { 
+window.applicationCache.addEventListener('updateready', function () {
 	try {
-		window.applicationCache.swapCache(); 
+		window.applicationCache.swapCache();
 	} finally {
 		document.location = document.location;
 	}
