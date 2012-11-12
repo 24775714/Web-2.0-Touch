@@ -36,8 +36,11 @@
 		</tar>
 		<gzip src="${build.dir}/w2touch.tar" destfile="${build.dir}/w2touch.tar.gz"/>
 
-		<!-- upload to ftp ant unzip -->
+	</target>
 
+	<target name="deploy" depends="clean,build">
+		<!-- upload to ftp ant unzip -->
+		
 		<input message="       ---> Please enter ${ftp-user} password for ${ftp-host}:" addproperty="ftp-pass"> 
 			<handler type="secure"/>
 		</input>
