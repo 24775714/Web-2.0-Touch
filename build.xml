@@ -15,8 +15,12 @@
 		<buildnumber file="build.number" />	
  		<echo>BUILD Number: ${build.number}</echo>
 
-		<replaceregexp file="./cache.manifest" match="^# Version .* Build:.*$" replace="# Version ${version} Build: ${build.number}" byline="true"/>	
+ 		<echo>Generating manifest file...</echo>
+		<exec executable="php">
+			<arg value="manifest.php"/>
+		</exec>
 
+		<replaceregexp file="./index.appcache" match="^# Version .* Build:.*$" replace="# Version ${version} Build: ${build.number}" byline="true"/>	
 		<mkdir dir="${build.dir}"/>
 
 		<!-- tar, then gzip only relevant files -->
@@ -26,6 +30,8 @@
 				<exclude name="BUILD/**"/>
 				<exclude name="build.xml"/>
 				<exclude name="build.number"/>
+				<exclude name="manifest.php"/>
+				<exclude name="readme.md"/>
 			</tarfileset>
 		</tar>
 		<gzip src="${build.dir}/w2touch.tar" destfile="${build.dir}/w2touch.tar.gz"/>
