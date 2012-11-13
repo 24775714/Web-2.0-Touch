@@ -451,19 +451,18 @@ function jsTouchBox(name, params) {
 		} else {
 			var div = $('#'+ this.name +' > .jsTouch.div2 > div.content')[0];
 		}
-		// init scroll
-
-		if ( typeof $(div).data('scroll') == 'object' ) {
-			this.scroll = $(div).data('scroll');
-			setTimeout(function () { window.elements[obj.name].scroll.refresh(); }, 100);
-		} else {
-			this.scroll = new iScroll(div, { desktopCompatibility: true, zoom: false });
-			$(div).data('scroll', this.scroll);
-			setTimeout(function () { window.elements[obj.name].scroll.refresh(); }, 100);
-		}
-
 		// if there is a swipe elemenet
 		if ($(div).find('.swipe').length > 0) {
+			// init scroll
+			if ( typeof $(div).data('scroll') == 'object' ) {
+				this.scroll = $(div).data('scroll');
+				setTimeout(function () { window.elements[obj.name].scroll.refresh(); }, 100);
+			} else {
+				this.scroll = new iScroll(div, { desktopCompatibility: true, zoom: false });
+				$(div).data('scroll', this.scroll);
+				setTimeout(function () { window.elements[obj.name].scroll.refresh(); }, 100);
+			}
+
 			if ($(div).find('div #_tmp_swipe').length == 0) {
 				$(div).find('.swipe').width($(div).width());
 				$(div).find('div').append('<div id="_tmp_swipe" style="height: '+ $(div).find('.swipe.current').height() + 'px;"></div>');
@@ -598,6 +597,10 @@ function jsTouchBox(name, params) {
 					}).show();
 				}
 			}
+		} else {
+			this.scroll = new iScroll(div, { desktopCompatibility: true, zoom: false });
+			$(div).data('scroll', this.scroll);
+			setTimeout(function () { window.elements[obj.name].scroll.refresh(); }, 100);
 		}
 	}
 

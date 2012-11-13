@@ -1,6 +1,5 @@
-# Version 1.0 Build: 27
-
 CACHE MANIFEST
+# Version 1.0 Build: 30
 ./css/apple.css
 ./css/core.css
 ./css/ipad-dark.css
@@ -81,4 +80,4 @@ CACHE MANIFEST
 ./pages/test.php
 ./pages/themes.html
 
-# hash: 5308b593f763144a32430205683f6f64
+# hash: 5d7d9e0d27f4d8847b9077fb37eaebbd

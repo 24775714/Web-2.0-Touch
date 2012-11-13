@@ -9,9 +9,7 @@ $ignore[] = "./readme.md";
 $ignore[] = "./index.appcache";
 
 $hash = "";
-$data = "# Version 1.0 Build: XXX
-
-CACHE MANIFEST\n";
+$data = "CACHE MANIFEST\n# Version 1.0 Build: XXX\n";
 
 // read all files and their hashes
 $dir = new RecursiveDirectoryIterator(".");
