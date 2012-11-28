@@ -12,8 +12,7 @@ $(document).ready(function () {
 	resize();
 });
 // events
-document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false); // prevent default scroll 
-document.addEventListener('orientationchange', resize, false);
+window.addEventListener('orientationchange', resize, false);
 window.addEventListener('resize', resize, false);
 
 function resize() {

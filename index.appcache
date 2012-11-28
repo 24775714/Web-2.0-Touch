@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Version 1.0 Build: 30
+# Version 1.0 Build: 32
 ./css/apple.css
 ./css/core.css
 ./css/ipad-dark.css
@@ -50,7 +50,6 @@ CACHE MANIFEST
 ./images/tabs/wizard.png
 ./images/web20-touch.xar
 ./includes/cache.js
-./includes/iscroll.js
 ./includes/jquery.js
 ./includes/jsTouch.js
 ./index.html
@@ -80,4 +79,4 @@ CACHE MANIFEST
 ./pages/test.php
 ./pages/themes.html
 
-# hash: 5d7d9e0d27f4d8847b9077fb37eaebbd
+# hash: 7cee0f76c00e17e54975797d83860125

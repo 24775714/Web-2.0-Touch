@@ -176,6 +176,8 @@ div.overlay .footer {
 }
 
 div.overlay .content {
+	-webkit-overflow-scrolling: touch;
+	overflow: auto;
     -webkit-box-sizing: border-box;
 	margin: 0px;
     padding: 5px;

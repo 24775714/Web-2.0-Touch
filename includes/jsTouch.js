@@ -111,6 +111,17 @@ var jsTouch = {
 		$('#overlay_box a').click(new Function(
 			"$('#overlay_box a').removeClass('clicked');"+
 			"$(this).addClass('clicked');"));
+		// scroll div, but not document
+		var touchStartEvent;
+		$('#overlay_box div.content')
+			.on('touchstart', function (e) { 
+				touchStartEvent = e; 
+			})
+		    .on('touchmove', function(e) {
+		        if ((e.originalEvent.pageY > touchStartEvent.originalEvent.pageY && this.scrollTop == 0) ||
+		            (e.originalEvent.pageY < touchStartEvent.originalEvent.pageY && this.scrollTop + this.offsetHeight >= this.scrollHeight))
+		            e.preventDefault();
+		    });
 	},
 
 	overlayPage: function(url, params, callBack) {
@@ -131,19 +142,23 @@ var jsTouch = {
 			// create HTML overlay
 			jsTouch.overlayHTML('<div class="content"></div>', params);
 			$.get(url, {}, function (data) {
-				$('#overlay_box').html(data);
-				// isert another DIV (needed for iScroll)
-				var tmp = $('.content', $('#overlay_box'))[0];
-				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
-
+				$('#overlay_box').html(data);				
+				// scroll div, but not document
+				var touchStartEvent;
+				$('#overlay_box div.content')
+					.on('touchstart', function (e) { 
+						touchStartEvent = e; 
+					})
+				    .on('touchmove', function(e) {
+				        if ((e.originalEvent.pageY > touchStartEvent.originalEvent.pageY && this.scrollTop == 0) ||
+				            (e.originalEvent.pageY < touchStartEvent.originalEvent.pageY && this.scrollTop + this.offsetHeight >= this.scrollHeight))
+				            e.preventDefault();
+				    });
 				// check presens of footer and toolbar
 				var isToolbar = ($('div.overlay div.toolbar').length > 0 ? true : false);
 				var isFooter  = ($('div.overlay div.footer').length > 0 ? true : false);
 				if (isToolbar) $('div.overlay div.content').css('top', '45px');
 				if (isFooter) $('div.overlay div.content').css('bottom', '60px');
-				// init scroll
-				if (jsTouch.overlay_scroll) { jsTouch.overlay_scroll.destroy(); jsTouch.overlay_scroll.scroll = null; }
-				jsTouch.overlay_scroll = new iScroll($('div.overlay div.content')[0], { desktopCompatibility: true, zoom: false });
 				// for buttons on top do it on touch start
 				$('#overlay_box a.button').bind('touchstart', new Function(
 					"$('#overlay_box a').removeClass('clicked');"+
@@ -223,7 +238,7 @@ function jsTouchBox(name, params) {
 			"	obj.animate(data, '"+ ((typeof(params) == 'object' && params['transition']) ? params['transition'] : "") +"'); "+
 			"	obj.initTabs();"+
 			"	obj.initLinks();"+
-			"	if (obj._tmpCallBack && obj._tmpCallBack == 'function') { obj._tmpCallBack(); } "+
+			"	if (obj._tmpCallBack && typeof obj._tmpCallBack == 'function') { obj._tmpCallBack(); } "+
 			"}")
 		);
 	}
@@ -245,7 +260,7 @@ function jsTouchBox(name, params) {
 			"	}"+
 			"	obj.initLinks();"+
 			"	obj.initScroll();"+
-			"	if (obj._tmpCallBack && obj._tmpCallBack == 'function') { obj._tmpCallBack(); } "+
+			"	if (obj._tmpCallBack && typeof obj._tmpCallBack == 'function') { obj._tmpCallBack(); } "+
 			"}")
 		);
 	}
@@ -352,9 +367,6 @@ function jsTouchBox(name, params) {
 				div_old.style.cssText += comcss +'-webkit-transform: rotateX(0deg);';
 				div_new.style.cssText += comcss +'-webkit-transform: rotateX(180deg);';
 				div_new.innerHTML = HTML;
-				// isert another DIV (needed for iScroll)
-				var tmp = $('.content', div_new)[0];
-				if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 				// -- need a timing function because otherwise not working
 				window.setTimeout(function() {
 					div_new.style.cssText += '-webkit-transition: .5s; -webkit-transform: rotateX(0deg);';
@@ -410,9 +422,6 @@ function jsTouchBox(name, params) {
 				}, 1);
 				break;
 		}
-		// isert another DIV (needed for iScroll)
-		var tmp = $('.content', div_new)[0];
-		if (tmp) tmp.innerHTML = '<div>' + tmp.innerHTML + '</div>';
 		// insert <span> for back and forward buttons
 		var tmp = $('.toolbar .button.back', div_new)[0];
 		if (tmp) tmp.innerHTML = '<span class="s1"></span><span class="s2"></span>' + tmp.innerHTML;
@@ -440,28 +449,26 @@ function jsTouchBox(name, params) {
 
 	function jsTouch_initScroll() {
 		var obj = this;
-		// make sure iScroll library is loaded
-		if (String(window.iScroll) == 'undefined') {
-			alert('You need to include iScroll.js library');
-			return;
-		}
 		// make divs scrollable
 		if (this._lastDiv) {
 			var div = $('#'+ this.name +' > .jsTouch.div1 > div.content')[0];
 		} else {
 			var div = $('#'+ this.name +' > .jsTouch.div2 > div.content')[0];
 		}
+		// scroll div, but not document
+		var touchStartEvent;
+		$(div)
+			.on('touchstart', function (e) { 
+				touchStartEvent = e; 
+			})
+		    .on('touchmove', function(e) {
+		        if ((e.originalEvent.pageY > touchStartEvent.originalEvent.pageY && this.scrollTop == 0) ||
+		            (e.originalEvent.pageY < touchStartEvent.originalEvent.pageY && this.scrollTop + this.offsetHeight >= this.scrollHeight))
+		            e.preventDefault();
+		    });
+
 		// if there is a swipe elemenet
 		if ($(div).find('.swipe').length > 0) {
-			// init scroll
-			if ( typeof $(div).data('scroll') == 'object' ) {
-				this.scroll = $(div).data('scroll');
-				setTimeout(function () { window.elements[obj.name].scroll.refresh(); }, 100);
-			} else {
-				this.scroll = new iScroll(div, { desktopCompatibility: true, zoom: false });
-				$(div).data('scroll', this.scroll);
-				setTimeout(function () { window.elements[obj.name].scroll.refresh(); }, 100);
-			}
 
 			if ($(div).find('div #_tmp_swipe').length == 0) {
 				$(div).find('.swipe').width($(div).width());
@@ -514,8 +521,6 @@ function jsTouchBox(name, params) {
 					setTimeout(function () {
 						$(curr).removeClass('current');
 						$(next).addClass('current');
-						// init scroll
-						obj.scroll.scrollTo(0,0);
 						obj.initScroll();
 					}, 250);
 					return;
@@ -534,8 +539,6 @@ function jsTouchBox(name, params) {
 					setTimeout(function () {
 						$(curr).removeClass('current');
 						$(prev).addClass('current');
-						// init scroll
-						obj.scroll.scrollTo(0,0);
 						obj.initScroll();
 					}, 250);
 					return;
@@ -597,10 +600,6 @@ function jsTouchBox(name, params) {
 					}).show();
 				}
 			}
-		} else {
-			this.scroll = new iScroll(div, { desktopCompatibility: true, zoom: false });
-			$(div).data('scroll', this.scroll);
-			setTimeout(function () { window.elements[obj.name].scroll.refresh(); }, 100);
 		}
 	}
 
